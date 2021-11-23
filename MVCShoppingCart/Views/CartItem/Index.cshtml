@@ -1,0 +1,110 @@
+﻿@model IEnumerable<MVCShoppingCart.Models.CartItem>
+@{
+    ViewData["Title"] = "Index";
+ Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>My Cart</h1>
+<hr />
+
+@if (Model.Any())
+{
+<table class="table">
+    <thead class="thead-light">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Item.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Item.Price)
+            </th>
+
+            <th class="text-center">Cost</th>
+
+            <th class="text-center">
+                @Html.DisplayNameFor(model => model.Quantity)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var cartItem in Model)
+        {
+            
+            
+            <tr class="tableRow">
+                <td>
+                    @Html.DisplayFor(modelItem => cartItem.Item.Name)
+                </td>
+                <td>
+                    $ @Html.DisplayFor(modelItem => cartItem.Item.Price)
+                </td>
+
+                @{var totalCost = cartItem.Item.Price * cartItem.Quantity;
+                    <td class="totalCost text-center">$ @totalCost</td>
+                }
+
+
+                <td class="text-center">
+                    @*<form method="post" asp-action="Update" asp-controller="CartItem">*@
+                    <input id="cartItemId" class="cartItemId" name="cartItemId" value="@cartItem.Id" type="hidden" />
+                    <input class="quantity badge-light" type="number" min="0" name="quantity" value="@cartItem.Quantity" style="margin-right : 15px;" />
+
+                    @*<button id="update" type="submit" class="btn btn-warning">Update</button>*@
+                    <button type="submit" class="updateButton btn btn-warning">Update</button>
+                    @*</form>*@
+                    @* <a class="btn btn-warning" asp-controller="Cart" asp-action="Update" asp-route-cartItem="@cartItem">Update</a>*@
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+else
+{
+    <h3>Your cart is empty</h3>
+}
+
+<form method="get" asp-action="Index" asp-controller="Customer">
+    <button type="submit" class="btn btn-success">Continue Shopping..</button>
+</form>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+                var cartItem = @Html.Raw(Json.Serialize(Model));
+                $(".quantity").each(function (i) {
+                    $(this).on("change keyup", function () {
+                        var quantity = $(this).val();
+                        var totalCost = cartItem[i]['item']['price'] * quantity;
+                        $(".totalCost").eq(i).text("$ " + totalCost);
+                        var updatedData = {
+                            CartItemId: $(".cartItemId").eq(i).val(),
+                            Quantity: quantity
+                        };
+                        console.log(updatedData);
+                        $(".updateButton").eq(i).on("click", function () {
+                            console.log('update Button');
+                            $.ajax({
+                                url: "@Url.Action("Update", "CartItem")",
+                                type: 'POST',
+                                dataType: 'json',
+                                data: updatedData,
+                                success: function (response) {
+                                    console.log(response.success);
+                                    if (response.success == "deleted") {
+                                        $(".tableRow").eq(i).hide("slow");
+                                    }
+                                },
+                                error: function () {
+                                    console.log('Error in Operation');
+                                }
+                            });
+                        });
+                    });
+                });
+
+        });
+    </script>
+}
+
+

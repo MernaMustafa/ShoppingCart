@@ -1,0 +1,49 @@
+﻿@using Microsoft.AspNetCore.Http @*to access sessions*@
+
+<ul class="navbar-nav">
+    @if (Context.Session.GetString("UserID") != null)
+    {
+        @if (Context.Session.GetString("Type") == "admin")
+        {
+            <li class="nav-item">
+                <div class="dropdown show">
+                    <a class="nav-link text-dark dropdown-toggle" role="button" id="dropdownMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Admin
+                    </a>
+
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenu">
+                        <a class="dropdown-item" asp-controller="Item" asp-action="Index">Manage Products</a>
+                        <a class="dropdown-item" asp-controller="User" asp-action="Index">Manage Users</a>
+                    </div>
+                </div>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Logout">Logout</a>
+            </li>
+        }
+        else
+        {
+            <li class="nav-item">
+                <a class="nav-link text-dark" asp-controller="CartItem" asp-action="Index" asp-route-id=@Context.Session.GetString("UserID")>
+                    <img src="~/Images/cart2.png" />
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Logout">Logout</a>
+            </li>
+
+        }
+
+    }
+    else
+    {
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Register">Register</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Login">Login</a>
+        </li>
+    }
+</ul>
