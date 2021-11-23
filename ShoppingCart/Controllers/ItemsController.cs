@@ -25,7 +25,7 @@ namespace ShoppingCart.Controllers
             _itemRepository = itemRepository;
         }
         // GET: api/Items
-        [AllowCrossSiteJson]
+        //[AllowCrossSiteJson]
         [Authorize(Roles = "admin, customer")]
         [HttpGet]
         public async Task<IActionResult> GetAllItems()
